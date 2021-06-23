@@ -1,0 +1,66 @@
+# 第十一章 正则表达表达式与文件格式化处理
+
+1.  基础正则表达式
+    - 语系会改变字符之间的编码顺序,在使用[A-Z]时会产生差异,经常使用LANG=C和export  LC_ALL=C来统一格式为POSIX标准
+    - 特殊符号:[:xxx:]
+      - alnum 大小写英文字母与数字
+      - alpha 大小写英文字母
+      - digit 数字
+      - lower / upper 小写 / 大写字母
+      - blank 空格与tab
+      - space 空格,tab与CR 
+      - 注: '\n' = LF=换行另起一行 '\r'=CR回车回到一行开头  Window用CRLF(^M$)而 Unix用CR($)
+    - $ grep[-A n] [-B n]  'find_key' filename 选取符合正则表达式的行
+      - -A n 把后n行列出来 -B n 把前n行列出来
+      - 默认把--color=auto包含在内
+      - $ find / -type f 2>/dev/null | xargs -n 10 grep '\*'  查找/下所有文件内容中含有'*'的一行 一般用xargs减少字符串数量 
+      - $ dmesg 查看内核信息
+    - 正则表达式(与通配符号不是一回事, $ ls 支持的是通配符号可以用| grep 选取)
+      - [ae] 匹配一个字符为a或e
+      - [^g] 匹配一个不是g的字符
+      - [a-z] 匹配一个编号在a-z中的字符 [^a-z]匹配一个编号不在a-z中的字符
+      - [[:xxx:]]匹配一个[:xxx:]所表示的特殊字符 [^[:xxx:]]匹配一个[:xxx:]所表示的特殊字符
+      - ^xyz / ^[ae] 匹配行首为xyz 或者 行首为 a/e 的一行
+      - \.$ 匹配行尾为'.' 的一行  $ 匹配空白行
+      - . 匹配任意一个字符
+      - o*匹配空串或1个o以上的字符 .\*匹配一个或一个以上的人以字符
+      - o\\{(n1),(n2)\\} 匹配n1个到n2个o   注意{}在bash下有特殊意义需要转义,n1省略为0 n2省略为无穷大  
+      - 特殊字符需要转义
+3. 扩展正则表达式
+    - $ grep -E 或者 $ egrep 使用扩展正则表达式
+    - xxxx|yyyy 匹配xxxx或yyyy两种字符
+    - x? 匹配0个或一个x字符
+    - x+ 匹配1个或1个以上的x字符
+    - ()+ 匹配1个或1个以上的()中的群组字符 ()中可以添加匹配模式 
+4. 常用工具
+    - $ sed [-nefri] 'n1,n2 [acdips]' 修改多个行
+      - -i 对源文件进行修改
+      - -e 后接操作名称 可以用 -e '...' -e '...' 表示进行多个操作
+      - -n 'n1,n2p' 在安静模式下(只显示sed特殊处理的行)将n1-n2 行显示出来
+      - 'n1,n2d' 删除n1-n2行 (可以用$表示最后一行)
+      - 'na xxxxx' 在第n行的下一行插入'xxxxx'一行 (可以用$表示最后一行)
+      - 'ni xxxxx' 在第n行的上一行插入'xxxxx'一行
+      - 'n[ia] xxxxxx \ > yyyyyyy' 插入两行 后面添加 '\'+回车增加多行 
+      - 'n1,n2s/xxx/yyy/g' 在n1-n2行中将xxx变成yyy
+      - 'n1,n2c xxxxx' 把n1-n2行变成xxxxx
+    - $ printf '格式' content 以某种格式打印
+      - \[abfnrtvx]为特殊转义字符
+      - %ns %ni %N.nf 为变量形式
+      - content 可以由 $(command) 或 \`command` 方式给出
+    - $ awk 'condition1{operation1;operation2...} condition2{}' filename 修改一行之中的内容
+      - 默认按tab或空格划分每个字段,用$1,$2..来表示字段内容 如 $ awk '{printf $1 "\\t"$2}' ($0表示一列)
+      - 操作一般用printf 表示 由于在已经在'...'中 格式用"..."表示 如 $ awk '{printf "%s %s %s",$1,$2,$3}'
+      - 变量名称: NF 一行字段总数 NR 第几行 FS 分隔字符  如 $ awk 'BEGIN{FS=":"}' 改变分隔字符
+      - 条件: condition 可以添加逻辑判断
+5. 文件对比工具
+    - $ diff [-bBi] from-file to-file 显示两个文件的不同/显示两个目录下文件的不同
+      - -b 忽略空格
+      - -B 忽略空白行
+      - -i 忽略大小
+      - $ diff -Naur from-file to-file > file.patch 建立补丁文件 (Naur 不存在文件看作空文件,视为文本处理,统一输出格式,递归)
+   - $  patch [-R][-p] < file.patch  升级或还原补丁
+     - -p 后接数字 如 -p2 删除从根目录开始总计2个破折号(删除2层目录)
+     - -R 还原 没有-R 表示升级补丁
+   - $ cmp [-l] 显示字节单位上的不同
+     - -l 显示所有的字节不同之处
+   - $ pr filename 以打印格式显示文件
