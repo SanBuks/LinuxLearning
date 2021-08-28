@@ -1,0 +1,12 @@
+" 寄存器
+set clipboard=unnamedplus " 设置系统剪切板为无名
+set NERDTree
+
+let mapleader=" "
+
+" , + p Paste模式toggle
+:map <leader>p :set paste! paste?<CR>
+" , + g 打开目录
+:map <leader>g :NERDTreeToggle<CR>
+" , + v 回到目录窗口 
+:map <leader>v :NERDTreeFind<CR>

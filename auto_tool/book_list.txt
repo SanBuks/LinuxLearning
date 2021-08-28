@@ -1,0 +1,10 @@
+GNU Make
+A Program for Directed Compilation
+Richard M. Stallman, Roland McGrath | 2002 |
+
+The GNU Make Book
+John Graham-Cumming | 2015 |
+
+Managing Projects with GNU Make
+The Power of GNU Make for Building Anything
+Robert Mecklenburg | 2004 
