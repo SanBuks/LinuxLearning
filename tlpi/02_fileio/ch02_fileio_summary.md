@@ -23,5 +23,4 @@
 ```c++
 int fd = open("test", O_RDONLY); 
 int fd = open("test", O_RDWR | O_CREAT | O_TRUNC | O_APPEND); 
-
 ```

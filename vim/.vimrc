@@ -23,16 +23,16 @@ colorscheme gruvbox " 配色主题 ~/.vim/colors/*.vim
 set clipboard=unnamedplus " 设置系统剪切板为无名
 
 " 映射
-let mapleader="," " 设置 ，为自定义热键
+" 设置 <space>为自定义热键
+let mapleader=" " 
 
-" , + n 行号toggle
+" <leader> + n 行号toggle
 nnoremap <leader>n :set number! number?<CR>
-" , + p Paste模式toggle
+" <leader> + p Paste模式toggle
 nnoremap <leader>p :set paste! paste?<CR>
-
-" , + g 打开目录
+" <leader> + g 打开目录
 nnoremap <leader>g :NERDTreeToggle<CR>
-" , + v 回到目录窗口 
+" <leader> + v 回到目录窗口 
 nnoremap <leader>v :NERDTreeFind<CR>
 
 " ctrl + p 打开搜索文件

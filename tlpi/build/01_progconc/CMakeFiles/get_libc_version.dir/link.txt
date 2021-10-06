@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/get_libc_version.dir/get_libc_version.cpp.o  -o get_libc_version 

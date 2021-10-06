@@ -1,0 +1,30 @@
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: D:/Project/LEARNING/LinuxLearning/tlpi/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake -f Makefile /nologo cmTC_9adb5\fast && 系统找不到指定的文件。
+Generator: execution of make failed. Make command was: nmake -f Makefile /nologo cmTC_9adb5\fast && 
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: D:/Project/LEARNING/LinuxLearning/tlpi/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake -f Makefile /nologo cmTC_273f2\fast && 系统找不到指定的文件。
+Generator: execution of make failed. Make command was: nmake -f Makefile /nologo cmTC_273f2\fast && 
+
+
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: D:/Project/LEARNING/LinuxLearning/tlpi/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake -f Makefile /nologo cmTC_731bd\fast && 系统找不到指定的文件。
+Generator: execution of make failed. Make command was: nmake -f Makefile /nologo cmTC_731bd\fast && 
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: D:/Project/LEARNING/LinuxLearning/tlpi/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):nmake -f Makefile /nologo cmTC_b4567\fast && 系统找不到指定的文件。
+Generator: execution of make failed. Make command was: nmake -f Makefile /nologo cmTC_b4567\fast && 
+
+

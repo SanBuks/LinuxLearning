@@ -1,0 +1,11 @@
+/home/LinuxLearning/build/CMakeFiles/rebuild_cache.dir
+/home/LinuxLearning/build/CMakeFiles/edit_cache.dir
+/home/LinuxLearning/build/lib/CMakeFiles/rebuild_cache.dir
+/home/LinuxLearning/build/lib/CMakeFiles/edit_cache.dir
+/home/LinuxLearning/build/lib/CMakeFiles/tlpi_header.dir
+/home/LinuxLearning/build/01_progconc/CMakeFiles/rebuild_cache.dir
+/home/LinuxLearning/build/01_progconc/CMakeFiles/edit_cache.dir
+/home/LinuxLearning/build/01_progconc/CMakeFiles/get_libc_version.dir
+/home/LinuxLearning/build/02_fileio/CMakeFiles/rebuild_cache.dir
+/home/LinuxLearning/build/02_fileio/CMakeFiles/edit_cache.dir
+/home/LinuxLearning/build/02_fileio/CMakeFiles/copy.dir

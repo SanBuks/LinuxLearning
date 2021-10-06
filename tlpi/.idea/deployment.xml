@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="Linux (9150d301-6b19-46b3-96d3-fbeb6a5c17de)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/LinuxLearning" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/build" />
+            <excludedPath local="true" path="$PROJECT_DIR$/debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/build" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="Remote GDB Server (4040fa7c-4b84-4b7a-bcce-56c64bc0087f)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

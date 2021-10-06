@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/copy.dir/copy.cc.o  -o copy  -Wl,-rpath,/home/LinuxLearning/build/lib ../lib/libtlpi_header.so 

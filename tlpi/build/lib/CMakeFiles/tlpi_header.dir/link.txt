@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O2 -DNDEBUG  -shared -Wl,-soname,libtlpi_header.so -o libtlpi_header.so CMakeFiles/tlpi_header.dir/get_num.cc.o CMakeFiles/tlpi_header.dir/error_functions.cc.o 
