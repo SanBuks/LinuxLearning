@@ -9,39 +9,34 @@
 \*************************************************************************/
 
 /* Listing 3-2 */
-
 /* error_functions.h
+   Header file for error_functions.c.*/
+/* Error diagnostic routines */
 
-   Header file for error_functions.c.
-*/
 #ifndef ERROR_FUNCTIONS_H
 #define ERROR_FUNCTIONS_H
 
-/* Error diagnostic routines */
+// NORETURN 替换为 C++11 引入的 [[noreturn]] 属性
 
+[[noreturn]]
 void errMsg(const char *format, ...);
 
-#ifdef __GNUC__
+[[noreturn]]
+void errExit(const char *format, ...);
 
-    /* This macro stops 'gcc -Wall' complaining that "control reaches
-       end of non-void function" if we use the following functions to
-       terminate main() or some other non-void function. */
+[[noreturn]]
+void err_exit(const char *format, ...);
 
-#define NORETURN __attribute__ ((__noreturn__))
-#else
-#define NORETURN
-#endif
+[[noreturn]]
+void errExitEN(int errnum, const char *format, ...);
 
-void errExit(const char *format, ...) NORETURN ;
+[[noreturn]]
+void fatal(const char *format, ...);
 
-void err_exit(const char *format, ...) NORETURN ;
+[[noreturn]]
+void usageErr(const char *format, ...);
 
-void errExitEN(int errnum, const char *format, ...) NORETURN ;
-
-void fatal(const char *format, ...) NORETURN ;
-
-void usageErr(const char *format, ...) NORETURN ;
-
-void cmdLineErr(const char *format, ...) NORETURN ;
+[[noreturn]]
+void cmdLineErr(const char *format, ...);
 
 #endif

@@ -9,200 +9,178 @@
 \*************************************************************************/
 
 /* Listing 3-3 */
-
 /* error_functions.c
-
    Some standard error handling routines used by various programs.
 */
-#include <stdarg.h>
-#include "include/error_functions.h"
-#include "include/tlpi_hdr.h"
-#include "include/ename.inc.h"          /* Defines ename and MAX_ENAME */
 
-#ifdef __GNUC__                 /* Prevent 'gcc -Wall' complaining  */
-__attribute__ ((__noreturn__))  /* if we call this function as last */
-#endif                          /* statement in a non-void function */
-static void
-terminate(Boolean useExit3)
-{
-    char *s;
+#include <cstdarg>             /* 引入可变参数 */
+#include "ename.c.inc"         /* 定义 errno 常量对应的字符串数组 */
+#include "error_functions.h"
+#include "tlpi_hdr.h"
 
-    /* Dump core if EF_DUMPCORE environment variable is defined and
-       is a nonempty string; otherwise call exit(3) or _exit(2),
-       depending on the value of 'useExit3'. */
-
-    s = getenv("EF_DUMPCORE");
-
-    if (s != NULL && *s != '\0')
-        abort();
-    else if (useExit3)
-        exit(EXIT_FAILURE);
-    else
-        _exit(EXIT_FAILURE);
+/**
+ * 中止进程
+ * 如果环境参数 EF_DUMPCORE 已定义且不为空, 则通过 abort() 函数产生 dumpcore
+ * 否则判断参数 `ueseExit3` 调用不同退出函数
+ * @param useExit3 true  : 使用 exit() 退出
+ *                 falst : 使用 _exit() 退出
+ */
+static void terminate(Boolean useExit3) {
+  char *s = getenv("EF_DUMPCORE");
+  if (s != nullptr && *s != '\0') {
+    abort();
+  } else if (useExit3) {
+    exit(EXIT_FAILURE);
+  } else {
+    _exit(EXIT_FAILURE);
+  }
 }
 
-/* Diagnose 'errno' error by:
+/**
+ * 将 errno 名称 和 用户自定义错误字符串 按格式输出到 stderr 中
+ * 其中 errno 名来自 build_ename.sh 生成出的字符串数组, 且附加上 strerror 描述字符串
+ * @param useErr      是否采用 errno 对应的错误名称
+ * @param err         errno 编号
+ * @param flushStdout 是否刷新 stdout
+ * @param format      用户自定义的输出格式
+ * @param ap          用户自定义的不定参数
+ */
+static void outputError(Boolean useErr, int err, Boolean flushStdout,
+                        const char *format, va_list ap) {
+  const int BUF_SIZE = 500;
+  char userMsg[BUF_SIZE], errText[BUF_SIZE], buf[BUF_SIZE];
 
-      * outputting a string containing the error name (if available
-        in 'ename' array) corresponding to the value in 'err', along
-        with the corresponding error message from strerror(), and
+  vsnprintf(userMsg, BUF_SIZE, format, ap);
 
-      * outputting the caller-supplied error message specified in
-        'format' and 'ap'. */
+  if (useErr) {
+    snprintf(errText, BUF_SIZE, "[%s : %s]",
+             (err > 0 && err <= MAX_ENAME) ? ename[err] : "?UNKNOWN?",
+             strerror(err));
+  } else {
+    snprintf(errText, BUF_SIZE, "");
+  }
 
-static void
-outputError(Boolean useErr, int err, Boolean flushStdout,
-        const char *format, va_list ap)
-{
-#define BUF_SIZE 500
-    char buf[BUF_SIZE], userMsg[BUF_SIZE], errText[BUF_SIZE];
-
-    vsnprintf(userMsg, BUF_SIZE, format, ap);
-
-    if (useErr)
-        snprintf(errText, BUF_SIZE, " [%s %s]",
-                (err > 0 && err <= MAX_ENAME) ?
-                ename[err] : "?UNKNOWN?", strerror(err));
-    else
-        snprintf(errText, BUF_SIZE, ":");
-
+  // GCC 提供 编译段落的 诊断参数
+  // #pragma GCC diagnostic push
+  // #pragma GCC diagnostic warning "-XXX"
+  // #pragma GCC diagnostic error   "-XXX"
+  // #pragma GCC diagnostic ignored "-XXX"
+  // #pragma GCC diagnostic pop
+  // ignore "-Wformat-truncation" 忽视截断问题
 #if __GNUC__ >= 7
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 #endif
-    snprintf(buf, BUF_SIZE, "ERROR%s %s\n", errText, userMsg);
+  snprintf(buf, BUF_SIZE, "ERROR%s : %s\n", errText, userMsg);
 #if __GNUC__ >= 7
 #pragma GCC diagnostic pop
 #endif
 
-    if (flushStdout)
-        fflush(stdout);       /* Flush any pending stdout */
-    fputs(buf, stderr);
-    fflush(stderr);           /* In case stderr is not line-buffered */
+  if (flushStdout) {
+    fflush(stdout);  // 刷新 stdout
+  }
+  fputs(buf, stderr);
+  fflush(stderr);    // 防止 stderr 不是行缓冲 */
 }
 
-/* Display error message including 'errno' diagnostic, and
-   return to caller */
-
-void
-errMsg(const char *format, ...)
-{
-    va_list argList;
-    int savedErrno;
-
-    savedErrno = errno;       /* In case we change it here */
-
-    va_start(argList, format);
-    outputError(TRUE, errno, TRUE, format, argList);
-    va_end(argList);
-
-    errno = savedErrno;
+/**
+ * 显示 errno 名称 和 自定义错误信息
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void errMsg(const char *format, ...) {
+  va_list argList;
+  int savedErrno;
+  savedErrno = errno;  // 防止改动
+  va_start(argList, format);
+  outputError(TRUE, errno, TRUE, format, argList);
+  va_end(argList);
+  errno = savedErrno;
 }
 
-/* Display error message including 'errno' diagnostic, and
-   terminate the process */
-
-void
-errExit(const char *format, ...)
-{
-    va_list argList;
-
-    va_start(argList, format);
-    outputError(TRUE, errno, TRUE, format, argList);
-    va_end(argList);
-
-    terminate(TRUE);
+/**
+ * 显示 errno 名称 和 自定义错误信息, 然后通过 exit() 中止进程, 刷新 stdout
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void errExit(const char *format, ...) {
+  va_list argList;
+  va_start(argList, format);
+  outputError(TRUE, errno, TRUE, format, argList);
+  va_end(argList);
+  terminate(TRUE);
 }
 
-/* Display error message including 'errno' diagnostic, and
-   terminate the process by calling _exit().
-
-   The relationship between this function and errExit() is analogous
-   to that between _exit(2) and exit(3): unlike errExit(), this
-   function does not flush stdout and calls _exit(2) to terminate the
-   process (rather than exit(3), which would cause exit handlers to be
-   invoked).
-
-   These differences make this function especially useful in a library
-   function that creates a child process that must then terminate
-   because of an error: the child must terminate without flushing
-   stdio buffers that were partially filled by the caller and without
-   invoking exit handlers that were established by the caller. */
-
-void
-err_exit(const char *format, ...)
-{
-    va_list argList;
-
-    va_start(argList, format);
-    outputError(TRUE, errno, FALSE, format, argList);
-    va_end(argList);
-
-    terminate(FALSE);
+/**
+ * 显示 errno 名称 和 自定义错误信息, 然后通过 _exit() 中止进程, 不刷新 stdout
+ * _exit() 不会调用 退出 handler, exit() 会调用 exit handler
+ * 特别用处: 子进程使用此函数退出时不会刷新父进程的 stdio , 不会调用父进程创建的 exit handler
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void err_exit(const char *format, ...) {
+  va_list argList;
+  va_start(argList, format);
+  outputError(TRUE, errno, FALSE, format, argList);
+  va_end(argList);
+  terminate(FALSE);
 }
 
-/* The following function does the same as errExit(), but expects
-   the error number in 'errnum' */
-
-void
-errExitEN(int errnum, const char *format, ...)
-{
-    va_list argList;
-
-    va_start(argList, format);
-    outputError(TRUE, errnum, TRUE, format, argList);
-    va_end(argList);
-
-    terminate(TRUE);
+/**
+ * 与 errExit() 类似, 提供自定义 errno
+ * @param errnum 自定义的错误编号
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void errExitEN(int errnum, const char *format, ...) {
+  va_list argList;
+  va_start(argList, format);
+  outputError(TRUE, errnum, TRUE, format, argList);
+  va_end(argList);
+  terminate(TRUE);
 }
 
-/* Print an error message (without an 'errno' diagnostic) */
-
-void
-fatal(const char *format, ...)
-{
-    va_list argList;
-
-    va_start(argList, format);
-    outputError(FALSE, 0, TRUE, format, argList);
-    va_end(argList);
-
-    terminate(TRUE);
+/**
+ * 仅仅打印用户自定义的错误信息, 调用 exit() 退出
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void fatal(const char *format, ...) {
+  va_list argList;
+  va_start(argList, format);
+  outputError(FALSE, 0, TRUE, format, argList);
+  va_end(argList);
+  terminate(TRUE);
 }
 
-/* Print a command usage error message and terminate the process */
-
-void
-usageErr(const char *format, ...)
-{
-    va_list argList;
-
-    fflush(stdout);           /* Flush any pending stdout */
-
-    fprintf(stderr, "Usage: ");
-    va_start(argList, format);
-    vfprintf(stderr, format, argList);
-    va_end(argList);
-
-    fflush(stderr);           /* In case stderr is not line-buffered */
-    exit(EXIT_FAILURE);
+/**
+ * 打印命令错误使用信息, 调用 exit() 退出
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void usageErr(const char *format, ...) {
+  va_list argList;
+  fflush(stdout);           // 打印 stderr 前注意刷新 stdout
+  fprintf(stderr, "Usage: ");
+  va_start(argList, format);
+  vfprintf(stderr, format, argList);
+  va_end(argList);
+  fflush(stderr);           // 防止 stderr 不是行缓冲
+  exit(EXIT_FAILURE);
 }
 
-/* Diagnose an error in command-line arguments and
-   terminate the process */
-
-void
-cmdLineErr(const char *format, ...)
-{
-    va_list argList;
-
-    fflush(stdout);           /* Flush any pending stdout */
-
-    fprintf(stderr, "Command-line usage error: ");
-    va_start(argList, format);
-    vfprintf(stderr, format, argList);
-    va_end(argList);
-
-    fflush(stderr);           /* In case stderr is not line-buffered */
-    exit(EXIT_FAILURE);
+/**
+ * 打印命令参数错误信息, 调用 exit() 退出
+ * @param format 用户自定义的输出格式
+ * @param ...    用户自定义的不定参数
+ */
+void cmdLineErr(const char *format, ...) {
+  va_list argList;
+  fflush(stdout);
+  fprintf(stderr, "Command-line usage error: ");
+  va_start(argList, format);
+  vfprintf(stderr, format, argList);
+  va_end(argList);
+  fflush(stderr);
+  exit(EXIT_FAILURE);
 }

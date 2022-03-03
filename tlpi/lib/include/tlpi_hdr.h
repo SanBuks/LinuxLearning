@@ -9,35 +9,27 @@
 \*************************************************************************/
 
 /* Listing 3-1 */
-
 /* tlpi_hdr.h
+   Standard header file used by nearly all of our example programs. */
 
-   Standard header file used by nearly all of our example programs.
-*/
 #ifndef TLPI_HDR_H
-#define TLPI_HDR_H      /* Prevent accidental double inclusion */
+#define TLPI_HDR_H
 
-#include <sys/types.h>  /* Type definitions used by many programs */
-#include <stdio.h>      /* Standard I/O functions */
-#include <stdlib.h>     /* Prototypes of commonly used library functions,
-                           plus EXIT_SUCCESS and EXIT_FAILURE constants */
-#include <unistd.h>     /* Prototypes for many system calls */
-#include <errno.h>      /* Declares errno and defines error constants */
-#include <string.h>     /* Commonly used string-handling functions */
-#include <stdbool.h>    /* 'bool' type plus 'true' and 'false' constants */
+#include <sys/types.h>        /* 包含系统数据类型 */
+#include <cstdio>             /* 包含常用 IO 函数 */
+#include <cstdlib>            /* 包含常用库函数和一些常量如 EXIT_SUCCESS, EXIT_FAILURE */
+#include <unistd.h>           /* 包含多个系统调用原型 */
+#include <cerrno>             /* 包含 errno 和多个 errno 常量 */
+#include <cstring>            /* 包含常用字符串函数 */
+#include <cstdbool>           /* 包含 'bool' 类型和 'true', 'false' 常量 */
 
-#include "get_num.h"    /* Declares our functions for handling numeric
-                           arguments (getInt(), getLong()) */
+#include "get_num.h"          /* 自定义定义处理数字型参数的函数 */
+#include "error_functions.h"  /* 自定义错误处理函数 */
 
-#include "error_functions.h"  /* Declares our error-handling functions */
-
-/* Unfortunately some UNIX implementations define FALSE and TRUE -
-   here we'll undefine them */
-
+/* 一些 UNIX 实现定义了 FALSE 和 TRUE 宏, 这里需要 undefine them */
 #ifdef TRUE
 #undef TRUE
 #endif
-
 #ifdef FALSE
 #undef FALSE
 #endif
@@ -47,36 +39,33 @@ typedef enum { FALSE, TRUE } Boolean;
 #define min(m,n) ((m) < (n) ? (m) : (n))
 #define max(m,n) ((m) > (n) ? (m) : (n))
 
-/* Some systems don't define 'socklen_t' */
-
+/* 一些系统没有定义 'socklen_t' */
 #if defined(__sgi)
 typedef int socklen_t;
 #endif
 
+/* 一些系统需要通过其他头文件包含 FASYNC */
 #if defined(__sun)
-#include <sys/file.h>           /* Has definition of FASYNC */
+#include <sys/file.h>
 #endif
 
+/* 一些系统定义了 FASYNC 而非 O_ASYNC */
 #if ! defined(O_ASYNC) && defined(FASYNC)
-/* Some systems define FASYNC instead of O_ASYNC */
 #define O_ASYNC FASYNC
 #endif
 
+/* BSD 系统使用 MAP_ANON, 而非 MAP_ANONYMOUS */
 #if defined(MAP_ANON) && ! defined(MAP_ANONYMOUS)
-/* BSD derivatives usually have MAP_ANON, not MAP_ANONYMOUS */
 #define MAP_ANONYMOUS MAP_ANON
-
 #endif
 
+/* 一些系统定义了 O_FSYNC 而非 O_SYNC */
 #if ! defined(O_SYNC) && defined(O_FSYNC)
-/* Some implementations have O_FSYNC instead of O_SYNC */
 #define O_SYNC O_FSYNC
 #endif
 
+/* FreeBSD 系统使用以下名称作为 sigval 结构体中的字段名 */
 #if defined(__FreeBSD__)
-
-/* FreeBSD uses these alternate names for fields in the sigval structure */
-
 #define sival_int sigval_int
 #define sival_ptr sigval_ptr
 #endif

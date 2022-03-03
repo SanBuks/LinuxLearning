@@ -1,3 +1,3 @@
 project (lib)
 add_library (tlpi_header SHARED get_num.cc error_functions.cc)
-target_include_directories(tlpi_header PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(tlpi_header PUBLIC include)

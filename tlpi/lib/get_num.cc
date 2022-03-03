@@ -9,95 +9,97 @@
 \*************************************************************************/
 
 /* Listing 3-6 */
-
 /* get_num.c
+   Functions to process numeric command-line arguments. */
 
-   Functions to process numeric command-line arguments.
-*/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-#include <errno.h>
-#include "include/get_num.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <climits>
+#include <cerrno>
 
-/* Print a diagnostic message that contains a function name ('fname'),
-   the value of a command-line argument ('arg'), the name of that
-   command-line argument ('name'), and a diagnostic error message ('msg'). */
+#include "get_num.h"
 
-static void
-gnFail(const char *fname, const char *msg, const char *arg, const char *name)
-{
-    fprintf(stderr, "%s error", fname);
-    if (name != NULL)
-        fprintf(stderr, " (in %s)", name);
-    fprintf(stderr, ": %s\n", msg);
-    if (arg != NULL && *arg != '\0')
-        fprintf(stderr, "        offending text: %s\n", arg);
-
-    exit(EXIT_FAILURE);
+/**
+ * 打印错误信息 包含以下信息
+ * @param fname 函数名称, 不为空
+ * @param msg   错误信息
+ * @param arg   命令参数值
+ * @param name  命令的参数名称
+ */
+static void gnFail(const char *fname, const char *msg,
+                   const char *arg, const char *name) {
+  fprintf(stderr, "%s error", fname);
+  if (name != nullptr && *name != '\0') {
+    fprintf(stderr, " (in %s)", name);
+  }
+  fprintf(stderr, ": %s\n", msg);
+  if (arg != nullptr && *arg != '\0') {
+    fprintf(stderr, "        offending text: %s\n", arg);
+  }
+  exit(EXIT_FAILURE);
 }
 
-/* Convert a numeric command-line argument ('arg') into a long integer,
-   returned as the function result. 'flags' is a bit mask of flags controlling
-   how the conversion is done and what diagnostic checks are performed on the
-   numeric result; see get_num.h for details.
+/**
+ * 将命令行参数值转换为 long
+ * @param fname 函数名称
+ * @param arg   参数值
+ * @param flags 控制符, 控制转换基和转换条件
+ * @param name  参数名称
+ * @return 返回转换的数值
+ */
+static long getNum(const char *fname, const char *arg,
+                   int flags, const char *name) {
+  long res;
+  char *endptr;
+  int base;
 
-   'fname' is the name of our caller, and 'name' is the name associated with
-   the command-line argument 'arg'. 'fname' and 'name' are used to print a
-   diagnostic message in case an error is detected when processing 'arg'. */
-
-static long
-getNum(const char *fname, const char *arg, int flags, const char *name)
-{
-    long res;
-    char *endptr;
-    int base;
-
-    if (arg == NULL || *arg == '\0')
-        gnFail(fname, "null or empty string", arg, name);
-
-    base = (flags & GN_ANY_BASE) ? 0 : (flags & GN_BASE_8) ? 8 :
-                        (flags & GN_BASE_16) ? 16 : 10;
-
-    errno = 0;
-    res = strtol(arg, &endptr, base);
-    if (errno != 0)
-        gnFail(fname, "strtol() failed", arg, name);
-
-    if (*endptr != '\0')
-        gnFail(fname, "nonnumeric characters", arg, name);
-
-    if ((flags & GN_NONNEG) && res < 0)
-        gnFail(fname, "negative value not allowed", arg, name);
-
-    if ((flags & GN_GT_0) && res <= 0)
-        gnFail(fname, "value must be > 0", arg, name);
-
-    return res;
+  if (arg == nullptr || *arg == '\0') {
+    gnFail(fname, "null or empty string", arg, name);
+  }
+  base = (flags & GN_ANY_BASE) ? 0 :      // base = 0 表示自动转换
+         (flags & GN_BASE_8) ? 8 :        // base = 8 表示八进制
+         (flags & GN_BASE_16) ? 16 : 10;  // base = 16 表示十六进制
+  errno = 0;
+  res = strtol(arg, &endptr, base);
+  if (errno != 0) {
+    gnFail(fname, "strtol() failed", arg, name);
+  }
+  if (*endptr != '\0') {                  // 没有全部转换
+    gnFail(fname, "nonnumeric characters", arg, name);
+  }
+  if ((flags & GN_NONNEG) && res < 0) {   // 必须是非负数
+    gnFail(fname, "negative value not allowed", arg, name);
+  }
+  if ((flags & GN_GT_0) && res <= 0) {   //  必须是正数
+    gnFail(fname, "value must be > 0", arg, name);
+  }
+  return res;
 }
 
-/* Convert a numeric command-line argument string to a long integer. See the
-   comments for getNum() for a description of the arguments to this function. */
-
-long
-getLong(const char *arg, int flags, const char *name)
-{
-    return getNum("getLong", arg, flags, name);
+/**
+ * 转换参数值为 long
+ * @param arg   参数值
+ * @param flags 控制符, 控制转换基和转换条件
+ * @param name  参数名称
+ * @return 返回 long 类型
+ */
+long getLong(const char *arg, int flags, const char *name) {
+  return getNum("getLong", arg, flags, name);
 }
 
-/* Convert a numeric command-line argument string to an integer. See the
-   comments for getNum() for a description of the arguments to this function. */
-
-int
-getInt(const char *arg, int flags, const char *name)
-{
-    long res;
-
-    res = getNum("getInt", arg, flags, name);
-
-    if (res > INT_MAX || res < INT_MIN)
-        gnFail("getInt", "integer out of range", arg, name);
-
-    return (int) res;
+/**
+ * 转换参数值为 int
+ * @param arg   参数值
+ * @param flags 控制符, 控制转换基和转换条件
+ * @param name  参数名称
+ * @return 返回 int 类型
+ */
+int getInt(const char *arg, int flags, const char *name) {
+  long res;
+  res = getNum("getInt", arg, flags, name);
+  if (res > INT_MAX || res < INT_MIN) {
+    gnFail("getInt", "integer out of range", arg, name);
+  }
+  return (int) res;
 }
