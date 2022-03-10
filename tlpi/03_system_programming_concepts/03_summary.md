@@ -19,7 +19,7 @@
   - 在内核栈中恢复寄存器值, 将返回值置于栈中
 - 返回到外壳函数, CPU 已切换为用户态, 若出错则对返回值再次取反后设置为 errno, 外壳函数返回负数 -1 整数值
 
-![](./image/process_of_system_call.png)
+![](../image/03_process_of_system_call.png)
 
 ## 1.3 其他总结
 - sysenter 指令替换 int 0x80 后进入内核的速度更快
@@ -108,7 +108,10 @@ if (s != 0) {
 # 5. 可移植性
 - 测试性宏: 规定了系统调用和库函数的标准 `gcc -D_XOPEN_SOURCE=600`
 - 系统数据类型类型: <sys/types.h> 定义
-- 打印参数类型: 转化成 long long / long 使用 %lld / %ld 打印
+- 打印参数类型: 
+  - long long / long: 使用 %lld / %ld 打印
+  - size\_t / ssize\_t: 使用 %zd  
+  - intmax_t/ uintmax_t: 使用 %jd
 - 结构体字段顺序: 用 `struct s{ .field = 1, .field2 = 2};` 初始化, 防止顺序不一致
 - 针对特殊宏做判断: `#fidef WCOREDUMP ...`
 - 头文件变化问题: 通过系统信息宏使用不同的头文件

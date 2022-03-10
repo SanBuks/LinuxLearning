@@ -10,7 +10,7 @@
 
 /* Listing 3-1 */
 /* tlpi_hdr.h
-   Standard header file used by nearly all of our example programs. */
+   标准头文件, 几乎每个例子都会包含 */
 
 #ifndef TLPI_HDR_H
 #define TLPI_HDR_H
@@ -36,8 +36,9 @@
 
 typedef enum { FALSE, TRUE } Boolean;
 
-#define min(m,n) ((m) < (n) ? (m) : (n))
-#define max(m,n) ((m) > (n) ? (m) : (n))
+// 注释掉, 与 C++ 库冲突
+//#define min(m,n) ((m) < (n) ? (m) : (n))
+//#define max(m,n) ((m) > (n) ? (m) : (n))
 
 /* 一些系统没有定义 'socklen_t' */
 #if defined(__sgi)

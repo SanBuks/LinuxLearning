@@ -9,9 +9,7 @@
 \*************************************************************************/
 
 /* Listing 3-2 */
-/* error_functions.h
-   Header file for error_functions.c.*/
-/* Error diagnostic routines */
+/* error_functions.h */
 
 #ifndef ERROR_FUNCTIONS_H
 #define ERROR_FUNCTIONS_H

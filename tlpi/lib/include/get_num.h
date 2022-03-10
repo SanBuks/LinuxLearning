@@ -9,8 +9,7 @@
 \*************************************************************************/
 
 /* Listing 3-5 */
-/* get_num.h
-   Header file for get_num.c. */
+/* get_num.h */
 
 #ifndef GET_NUM_H
 #define GET_NUM_H

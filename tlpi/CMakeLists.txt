@@ -18,9 +18,11 @@ set(CMAKE_BUILD_TYPE            Debug CACHE INTERNAL "")
 #-Wno-sign-compare      (-Wall)
 #-Wimplicit-fallthrough (-Wextra)
 #-Wno-unused-parameter  (-Wextra)
-set(MY_CMAKE_CXX_FLAGS "-D_XOPEN_SOURCE=600 -D_DEFAULT_SOURCE\
+set(MY_CMAKE_CXX_FLAGS "-g -D_XOPEN_SOURCE=600 -D_DEFAULT_SOURCE\
                         -w -Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_FLAGS_DEBUG ${MY_CMAKE_CXX_FLAGS} CACHE INTERNAL "")
 
 add_subdirectory(lib)
-add_subdirectory(03_system_programming_concepts)
+#add_subdirectory(03_system_programming_concepts)
+#add_subdirectory(04_the_universal_io_model)
+add_subdirectory(05_io_further_details)

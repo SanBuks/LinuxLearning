@@ -10,11 +10,10 @@
 
 /* Listing 3-6 */
 /* get_num.c
-   Functions to process numeric command-line arguments. */
+   处理命令行中数字的函数 */
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <climits>
 #include <cerrno>
 
@@ -25,7 +24,7 @@
  * @param fname 函数名称, 不为空
  * @param msg   错误信息
  * @param arg   命令参数值
- * @param name  命令的参数名称
+ * @param name  参数字符串
  */
 static void gnFail(const char *fname, const char *msg,
                    const char *arg, const char *name) {
@@ -45,7 +44,7 @@ static void gnFail(const char *fname, const char *msg,
  * @param fname 函数名称
  * @param arg   参数值
  * @param flags 控制符, 控制转换基和转换条件
- * @param name  参数名称
+ * @param name  参数字符串
  * @return 返回转换的数值
  */
 static long getNum(const char *fname, const char *arg,
@@ -71,7 +70,7 @@ static long getNum(const char *fname, const char *arg,
   if ((flags & GN_NONNEG) && res < 0) {   // 必须是非负数
     gnFail(fname, "negative value not allowed", arg, name);
   }
-  if ((flags & GN_GT_0) && res <= 0) {   //  必须是正数
+  if ((flags & GN_GT_0) && res <= 0) {    //  必须是正数
     gnFail(fname, "value must be > 0", arg, name);
   }
   return res;
@@ -81,7 +80,7 @@ static long getNum(const char *fname, const char *arg,
  * 转换参数值为 long
  * @param arg   参数值
  * @param flags 控制符, 控制转换基和转换条件
- * @param name  参数名称
+ * @param name  参数字符串
  * @return 返回 long 类型
  */
 long getLong(const char *arg, int flags, const char *name) {
@@ -92,7 +91,7 @@ long getLong(const char *arg, int flags, const char *name) {
  * 转换参数值为 int
  * @param arg   参数值
  * @param flags 控制符, 控制转换基和转换条件
- * @param name  参数名称
+ * @param name  参数字符串
  * @return 返回 int 类型
  */
 int getInt(const char *arg, int flags, const char *name) {

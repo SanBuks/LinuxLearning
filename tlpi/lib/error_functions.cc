@@ -10,8 +10,7 @@
 
 /* Listing 3-3 */
 /* error_functions.c
-   Some standard error handling routines used by various programs.
-*/
+   一些标准错误处理函数, 被大部分例子程序使用 */
 
 #include <cstdarg>             /* 引入可变参数 */
 #include "ename.c.inc"         /* 定义 errno 常量对应的字符串数组 */
